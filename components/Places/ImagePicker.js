@@ -5,14 +5,14 @@ function ImagePicker() {
     const [cameraPermissionInformation, requestPermission] = useCameraPermissions()
 
     async function verifyPermissions() {
-        console.log(cameraPermissionInformation)
         if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED ) {
             const permissionResponse = await requestPermission()
             return permissionResponse.granted
         }
+    
         if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
             console.log(cameraPermissionInformation)
-            Alert.alert("Permission Required to run app")
+            Alert.alert("Permission Required to run app", "YOU NEED TO GRANT PERMISSIONS")
             return false
         }
         return true
@@ -21,9 +21,11 @@ function ImagePicker() {
    async function takePhotoHandler() {
     const hasPermission = await verifyPermissions();
     console.log(hasPermission)
+
     if (!hasPermission) {
         return 
     }
+    
        const image = await launchCameraAsync({
         allowsEditing: true,
         aspect: [16, 9],

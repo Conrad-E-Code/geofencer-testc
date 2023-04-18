@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     label: {fontWeight: "bold",
 marginBottom: 4,
 color: Colors.primary500,
-borderBottomColor: Colors.primary700,
+
 borderBottomWidth: 2, },
     input: {
         marginVertical: 8,
