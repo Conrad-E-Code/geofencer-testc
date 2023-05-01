@@ -1,11 +1,13 @@
 import {Alert, StyleSheet, View, Text, Image } from "react-native";
 import OutlinedButton from "../UI/OutlinedButton";
 import { Colors } from "../../constants/colors";
-import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from "expo-location";
+import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus} from "expo-location";
 import { useState } from "react";
 import { getMapPreview } from "../../util/location";
+import { useNavigation } from "@react-navigation/native";
 
 function LocationPicker() {
+    const navigation = useNavigation()
     const [pickedLocation, SetPickedLocation] = useState()
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions()
     async function verifyPermissions() {
@@ -36,7 +38,9 @@ function LocationPicker() {
             lng: location.coords.longitude
         })
     }
-    function pickonMapHandler() {}
+    function pickonMapHandler() {
+        navigation.navigate("Map")
+    }
     let locationPreview = <Text>No location picked yet.</Text>
     if (pickedLocation) {
         locationPreview = 
@@ -69,7 +73,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: Colors.primary100,
-        borderRadius: 4
+        borderRadius: 4,
+        overflow: "hidden"
     },
     actions: {
         flexDirection: "row",
