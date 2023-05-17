@@ -1,6 +1,6 @@
 import { LocationAccuracy, startLocationUpdatesAsync, useBackgroundPermissions, PermissionStatus} from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
-import { } from 'react-native';
+import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AllPlaces from './screens/AllPlaces';
@@ -9,15 +9,38 @@ import IconButton from './components/UI/IconButton';
 import { Colors } from "./constants/colors"
 import Map from './screens/Map';
 import { useEffect } from 'react';
-import { askAsync } from "expo-permissions"
+import * as Permissions from "expo-permissions"
 
 export default function App() {
   const [locationPermissionInformation, requestPermission] = useBackgroundPermissions()
+  const requestLocationPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND);
+  
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Required',
+        'Please grant location permission to use this feature.',
+      );
+    }
+  };
+      async function verifyPermissions() {
+        console.log(locationPermissionInformation)
+      if ( locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+               const permissionResponse = await requestPermission()
+               return permissionResponse.granted
+           }
+           if (locationPermissionInformation.status === PermissionStatus.DENIED) {
+               console.log(locationPermissionInformation)
+               console.log("Billy")
+               Alert.alert("Permission Required to run app", "YOU NEED TO GRANT PERMISSIONS")
+               return false
+           }
+           return true
+       }
   const startLocationTask = async () => {
     const hasPermission = await verifyPermissions()
     if (!hasPermission) {
         return
-        
     }
     try {
       await startLocationUpdatesAsync('locationTask', {
@@ -32,27 +55,14 @@ export default function App() {
     }
   };
   useEffect(() => {
+    requestLocationPermission();
+  }, []);
+  useEffect(() => {
     startLocationTask();
   }, [])
     console.log("35")
 
-    async function verifyPermissions() {
-      if (locationPermissionInformation) {
-        console.log(locationPermissionInformation)
-      if ( locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-               const permissionResponse = await requestPermission()
-               return permissionResponse.granted
-           }
-           if (locationPermissionInformation.status === PermissionStatus.DENIED) {
-               console.log(locationPermissionInformation)
-               console.log("Billy")
-               Alert.alert("Permission Required to run app", "YOU NEED TO GRANT PERMISSIONS")
-               return false
-           }
-           return true
-          }
-   
-       }
+
     //    async function getLocationHandler() {
     //     const hasPermission = await verifyPermissions()
     //     if (!hasPermission) {
