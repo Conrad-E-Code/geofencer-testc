@@ -17,13 +17,15 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "REASON_FOR_REQUEST",
         "UIBackgroundModes": ["location", "fetch"]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "permissions": ["ACCESS_BACKGROUND_LOCATION"]
       }
     },
     "web": {
@@ -34,12 +36,6 @@
         "expo-image-picker",
         {
           "cameraPermission": "To use the app to take pictures"
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow Geofencer to use your location."
         }
       ]
     ]

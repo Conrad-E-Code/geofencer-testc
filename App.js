@@ -1,4 +1,4 @@
-import { LocationAccuracy, startLocationUpdatesAsync, useBackgroundPermissions, PermissionStatus} from 'expo-location';
+
 import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,68 +9,41 @@ import IconButton from './components/UI/IconButton';
 import { Colors } from "./constants/colors"
 import Map from './screens/Map';
 import { useEffect } from 'react';
-import * as Permissions from "expo-permissions"
+import * as Location from 'expo-location';
+import * as TaskManager from "expo-task-manager";
 
 export default function App() {
-  const [locationPermissionInformation, requestPermission] = useBackgroundPermissions()
-  const requestLocationPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION_BACKGROUND);
-  
-    if (status !== 'granted') {
-      Alert.alert(
-        'Permission Required',
-        'Please grant location permission to use this feature.',
-      );
-    }
-  };
-      async function verifyPermissions() {
-        console.log(locationPermissionInformation)
-      if ( locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-               const permissionResponse = await requestPermission()
-               return permissionResponse.granted
-           }
-           if (locationPermissionInformation.status === PermissionStatus.DENIED) {
-               console.log(locationPermissionInformation)
-               console.log("Billy")
-               Alert.alert("Permission Required to run app", "YOU NEED TO GRANT PERMISSIONS")
-               return false
-           }
-           return true
-       }
-  const startLocationTask = async () => {
-    const hasPermission = await verifyPermissions()
-    if (!hasPermission) {
-        return
-    }
-    try {
-      await startLocationUpdatesAsync('locationTask', {
-        accuracy: LocationAccuracy.Balanced,
-        timeInterval: 5000,
-        distanceInterval: 10,
-        foregroundService: true,
-      });
-      console.log('Location task started!');
-    } catch (error) {
-      console.log('Error starting location task:', error);
-    }
-  };
-  useEffect(() => {
-    requestLocationPermission();
-  }, []);
-  useEffect(() => {
-    startLocationTask();
-  }, [])
-    console.log("35")
+  const LOCATION_TASK_NAME = "background-location-task"
 
 
-    //    async function getLocationHandler() {
-    //     const hasPermission = await verifyPermissions()
-    //     if (!hasPermission) {
-    //         return 
-    //     }
-    //     console.log("has permission")
+  async function askPermission() {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  console.log(status)
+  }
+askPermission()
 
-    // }
+// Define the background task for location tracking
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  if (data) {
+    // Extract location coordinates from data
+    const { locations } = data;
+    const location = locations[0];
+    if (location) {
+      // Do something with captured location coordinates
+      console.log(location)
+    }
+  }
+});
+const startBackgroundTracking = async () => {
+  await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+    //Location Task Options
+    
+  });
+};
     
   const Stack = createNativeStackNavigator()
   return (
