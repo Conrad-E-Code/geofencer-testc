@@ -11,40 +11,51 @@ import Map from './screens/Map';
 import { useEffect } from 'react';
 import * as Location from 'expo-location';
 import * as TaskManager from "expo-task-manager";
+const LOCATION_TASK_NAME = "background-location-task"
 
-export default function App() {
-  const LOCATION_TASK_NAME = "background-location-task"
-
-
-  async function askPermission() {
-  let { status } = await Location.requestForegroundPermissionsAsync();
-  console.log(status)
+const askPermission = async () => {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  if (status == "granted") {
+    await Location.requestBackgroundPermissionsAsync();
   }
-askPermission()
+};
+
 
 // Define the background task for location tracking
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    console.error(error);
-    return;
+if (error) {
+  console.error(error);
+  return;
+}
+if (data) {
+  // Extract location coordinates from data
+  const { locations } = data;
+  const location = locations[0];
+  if (location) {
+    // Do something with captured location coordinates
+    console.log(location.timestamp)
   }
-  if (data) {
-    // Extract location coordinates from data
-    const { locations } = data;
-    const location = locations[0];
-    if (location) {
-      // Do something with captured location coordinates
-      console.log(location)
-    }
-  }
+}
+
 });
 const startBackgroundTracking = async () => {
-  await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-    //Location Task Options
-    
-  });
+await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+  //Location Task Options
+  timeInterval: 1800,
+  distanceInterval: 0,
+  accuracy: Location.LocationAccuracy.Balanced
+  
+
+});
 };
-    
+
+
+
+export default function App() {
+  useEffect(()=>{askPermission()},[])
+  useEffect(()=>{startBackgroundTracking()},[])
+
+
   const Stack = createNativeStackNavigator()
   return (
     <>

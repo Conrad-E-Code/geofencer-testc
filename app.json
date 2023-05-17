@@ -14,6 +14,20 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "expo-location/run-task",
+          "config": {
+            "taskName": "background-location-task",
+            "taskOptions": {
+              "accuracy": 4,
+              "timeInterval": 1800
+            }
+          }
+        }
+      ]
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -39,6 +53,5 @@
         }
       ]
     ]
-
   }
 }
